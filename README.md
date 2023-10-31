@@ -1,4 +1,4 @@
-# [Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)] (https://github.com/barretobrunosb/koriabo-model)
+# [Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)](https://github.com/barretobrunosb/koriabo-model)
 
 
 **Bruno de Souza Barreto**   [![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-9166-3875)
@@ -11,9 +11,9 @@
 
 
 
-This repository was produced as supplementary material to the paper "Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions", presented to the journal _Antiquity_.
+This repository was produced as supplementary material to the paper "Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions", psubmitted to the journal _Antiquity_.
 
-It contains the code of radiocarbon modelling in R, the raw data of radiocarbon dates, and a webmap with the location dated sites associated with Koriabo settlements or trade finds.
+It contains the code of radiocarbon modelling in R, the raw data of radiocarbon dates, and a web map with the location of dated sites associated with Koriabo settlements or trade finds.
 
 
 
