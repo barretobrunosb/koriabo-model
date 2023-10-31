@@ -11,7 +11,7 @@
 
 
 
-This repository was produced as supplementary material to the paper "Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions", psubmitted to the journal _Antiquity_.
+This repository was produced as supplementary material to the paper entitled "Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions", submitted to the journal _Antiquity_.
 
 It contains the code of radiocarbon modelling in R, the raw data of radiocarbon dates, and a web map with the location of dated sites associated with Koriabo settlements or trade finds.
 
@@ -19,7 +19,7 @@ It contains the code of radiocarbon modelling in R, the raw data of radiocarbon 
 
 For the **lexical database** used in the paper, go to the GitHub repository [here](https://github.com/LanguageStructure/carib-paper).
 
-[click here](https://github.com/barretobrunosb/koriabo-paper) to access the webpage containing the code and results of the radiocarbon modelling.
+[click here](https://github.com/barretobrunosb/koriabo-paper) to access the webpage containing the code and the results of the radiocarbon modelling.
 
 
 ## Abstract
