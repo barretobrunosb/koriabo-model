@@ -1,0 +1,1518 @@
+---
+title: "Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)"
+date: "2023-10-27"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE, cache = FALSE, autodep = TRUE}
+knitr::opts_chunk$set(echo = TRUE, autodep = TRUE)
+```
+
+**Bruno de Souza Barreto**   [![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-9166-3875)
+
+**Fabrício Ferraz Gerardi** [![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-2863-1467)
+
+**Fernando Orphão de Carvalho** [![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-2115-7416)
+
+**Tiago Tresoldi** [![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-2863-1467)
+
+
+
+
+## Abstract
+
+
+Between AD 1000 and 1500, the Koriabo Tradition expanded extensively, spanning the Guianas and the lower Amazon, persisting into the 16th and 17th centuries in the Caribbean and select Amazon areas. Notably, despite its wide distribution, Koriabo ceramics displayed remarkable consistency in motifs and some vessel shapes. This paper combines radiocarbon and linguistic models to explore a dual-process hypothesis of Koriabo expansion, marked by cultural transmission and demic diffusion closely linked to the dispersals of Cariban languages. We suggest this interplay facilitated rapid dissemination and established partially uniform archaeological patterns across the landscape.This page regards the supplementary material, where we present the code and deatils of the radiocarbon model are presented. To access the linguistic phylogenetic model, click here. 
+
+**Keywords:** Koriabo Pottery, Amazonia, Carib-speaking peoples, Exchange Networks, Demic Diffusion
+
+
+[click here](https://github.com/barretobrunosb/koriabo-paper) to access the repository and the raw data employed in this model.
+
+
+For the **lexical database** used in the paper, go to the GitHub repository [here](https://github.com/LanguageStructure/carib-paper).
+
+
+# {.tabset .tabset-fade}
+
+## Libraries and raw data
+```{r Loading Libraries, message = FALSE}
+library(tidyverse)
+library(rcarbon)
+library(rnaturalearth)
+library(sf)
+library(prettymapr)
+library(knitr)
+library(leaflet)
+library(leaflet.extras)
+library(htmlwidgets)
+library(sp)
+library(rgdal)
+library(magrittr)
+```
+
+
+#### **Shapefiles**
+```{r load_data, message = FALSE, warning = FALSE}
+# Loadding required shapefiles
+koriaboPottery <- sf::read_sf("data_raw/koriabo.shp", crs = 4326)             # Shapefile for the distribution of Koriabo pottery
+caribanLanguages <- sf::read_sf("data_raw/cariban_languages.shp", crs = 4326) # Shapefile for the distribution of Cariban Languages
+#caribanPoints <- sf::read_sf("data_raw/cariban_points.shp", crs = 4326)          # Shapefile for group ethnomies base on Nimuendaju's map
+water <- sf::read_sf("data_raw/sa_water.shp", crs = 4326)                     # Shapefile of Hydrography
+world <- rnaturalearth::ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') # Loading world layer vector
+dated_sites <- read.csv("data_raw/dated_sites.csv", header =) %>%                       #Dates sites with Koriabo Pottery
+  st_as_sf(
+    coords = c(13, 14),
+    crs = 4326
+  )
+#Points of Cariban languages in our phylogeny
+caribanPoints <- read.csv("data_raw/cariban_points.csv", header =) %>%                       
+  st_as_sf(
+    coords = c(5, 6),
+    crs = 4326
+  )
+
+#All radiocarbon dates for loading into the Rmarkdown
+datesTable <- read.csv("data_raw/dates_table.csv")
+
+
+```
+
+
+#### **Preparing the data**
+```{r raw_data, cache = TRUE, cache.extra = file.info("data_raw/c14dates.csv")}
+# Creation and management of data frame for all radiocarbon dates
+c14dates <- read.csv("data_raw/c14dates.csv")                # reading the CSV file with radiocarbon dates
+c14dates$site <- factor(c14dates$site)                       # converting the column 'dates' in a factor
+c14dates$country_state <- factor(c14dates$country_state)     # converting the column 'country_state' in a factor
+c14dates$culture <- factor(c14dates$culture)                 # converting the column 'culture' in a factor
+
+```
+
+
+## 1. Introduction
+
+
+#### **Introduction**
+This document was elaborated as the Supplementary Material for the paper entitled *Demic Diffusion and Cultural Transmission? Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions*, submitted to the Journal *Antiquity*. It is intended to show only the code and plot results of the radiocarbon modeling for Koriabo pottery, made up by means of the [rcarbon](https://cran.r-project.org/web/packages/rcarbon/index.html) package. It does not contain interpretation for the archaeological analysis.
+
+To access the repository of this file, contaning the raw data employed on the model, [click here](https://github.com/barretobrunosb/koriabo-paper).
+
+
+
+## 2. Maps
+
+This webmap shows the distribution of all known sites with Koriabo pottery (settlements and trade finds), the precise location of dated sites, an overall distribution of Cariban Languages (both historical and present day), and the location of the Cariban Languages used to build the linguistic phylonegy presented in the paper. 
+
+Click on the features below to see the information about the Cariban languages and Archaeological sites considered in this study.
+
+[**Click here to see this map in a full screen page**](https://barretobrunosb.github.io/koriabo-paper/map/map.html)
+
+
+```{r interactive_map, echo = FALSE, out.width = "100%", warning = FALSE, message = FALSE}
+
+mapPopup1 <- paste(
+  "<b>Language:</b>", caribanPoints$Language, "<br>")
+
+mapPopup2 <- paste(
+  "<b>Site:</b>", "<br>",
+  dated_sites$site, "<br>",
+  "<b>Earliest Date:</b>", "<br>",
+  dated_sites$c14oldest_date_bp, "+/-", dated_sites$standard_dev, "BP", "<br>",
+  "<b>Occupation Interval:</b>", "<br>",
+  "BC/AD", dated_sites$cal_early, "to", dated_sites$cal_late, "<br>",
+  "<b>Number of Dates: </b>", dated_sites$number_dates, "<br>",
+  "<b>Contains Outliers? </b>", dated_sites$outliers, "<br>")
+
+
+map <- leaflet() %>% 
+  setView(lng = -60, lat = 2, zoom = 4.5) %>% 
+  
+  #Basemap layers and Minimap
+  addTiles(attribution = '<b>Elaborated by Bruno Barreto, 2023 (barretobrunosb@gmail.com)</b>') %>% 
+  addProviderTiles(providers$Esri.WorldTerrain, group = "ESRI Terrain") %>%
+  addProviderTiles(providers$OpenTopoMap, group = "Open Topographical") %>%
+  addTiles(group = "Open Street Map") %>%
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI Imagery") %>%
+  addMiniMap(position = "bottomleft") %>%
+  
+
+  #Layers Cariban/Koriabo
+  addPolygons(data = water, color = "lightblue", stroke = FALSE, opacity = 1, fillOpacity = 1, group = "Main Rivers") %>% 
+  
+  addPolygons(data = caribanLanguages, color = alpha("red", 0.3), group = "Cariban Distribution") %>% 
+  
+  addPolygons(data = koriaboPottery, color = "blue", group = "Koriabo Pottery") %>%
+  
+  addCircles(data = dated_sites,
+      lat = ~lat,
+      lng = ~long,
+      weight = 1,
+      label = paste("site: ", dated_sites$site),
+      labelOptions = labelOptions(
+        textsize = "12px",
+        style = list("font-weight" = "bold",
+        padding = "5px")),
+      radius = ~c14oldest_date_bp*15,
+      color = "black",
+      fillColor = "black",
+      highlight = highlightOptions(color = "yellow", fillOpacity = .9, bringToFront = TRUE),
+      popup = mapPopup2,
+      group = "Dated Sites",
+      opacity = 2) %>%
+  
+   addCircles(data = caribanPoints,
+      lat = ~lat,
+      lng = ~long,
+      label = paste("Language: ", caribanPoints$Language),
+      labelOptions = labelOptions(
+        textsize = "12px",
+        style = list("font-weight" = "bold",
+        padding = "5px")),
+      radius = 20000,
+      fillColor = "goldenrod",
+      fillOpacity = 1,
+      stroke = T,
+      color = "goldenrod4",
+      highlight = highlightOptions(color = "yellow", fillOpacity = .9, bringToFront = TRUE),
+      group = "Languages",
+      popup = mapPopup1) %>% 
+
+  #Layers Control
+  addLayersControl(
+    position = "topright",
+    baseGroups = c("ESRI Terrain", "Open Topographical", "ESRI Imagery", "Open Street Map"),
+    overlayGroups = c("Cariban Distribution", "Languages", "Koriabo Pottery", "Dated Sites", "Main Rivers"),
+    options = layersControlOptions(collapsed = TRUE)
+  ) %>% 
+
+  #Legends
+  addLegend(
+    position = "bottomright",
+    values = c(caribanLanguages,  caribanPoints, koriaboPottery, dated_sites),
+    colors = c("red", "goldenrod", "blue", "black"),
+    labels = c("Cariban Distribution", "Languages", "Koriabo Pottery", "Dated Sites")) %>% 
+  
+  #Measure widget
+  addMeasure(primaryLengthUnit = "kilometers", primaryAreaUnit = "kilometers") %>% 
+  
+  #Add search field
+  addSearchFeatures(targetGroups = c("Dated Sites", "Languages"),
+                      options = searchFeaturesOptions(
+                      propertyLoc = c("lat","long"),
+                      formatData = NULL,
+                      filterData = NULL, 
+                      moveToLocation = TRUE, 
+                      zoom = 8,
+                      buildTip = NULL,
+                      minLength = 1,
+                      initial = FALSE,
+                      casesensitive = FALSE,
+                      autoType = TRUE,
+                      delayType = 50,
+                      tooltipLimit = -1,
+                      textPlaceholder = "Search Language/Site",
+                      position = "topleft",
+                      collapsed = TRUE,
+                      textErr = "Information not found",
+                      openPopup = TRUE
+                    )) %>% 
+  
+  #Add reset Button
+  addResetMapButton()
+
+  map
+
+  saveWidget(widget = map, file = "C:/Users/Bruno/OneDrive/Documentos/Rprojects/koriabo-cariban/map/map.html")
+
+
+```
+
+
+
+```{r plot_maps, include = TRUE, echo = FALSE, out.width = "100%", warning = FALSE, message = FALSE, results = 'hide'}
+
+par(mar = c(1,1,1,1), mfrow = c(1,1))
+
+#par(mar = c(1, 1, 1, 1), mfrow = c(2,1))
+
+plot(world$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = c(-76, -43),
+     ylim = c(-14, 12),
+     bgc = alpha("lightblue", 0.5),
+     main = "Distribution of Cariban Languages"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(caribanLanguages$geometry, 
+     col = alpha("red", 0.5),
+     border = alpha("gray20", 0.3),
+     add = TRUE
+)
+
+addnortharrow(
+  pos = "topright",
+  padin = c(0.15, 0.15),
+  scale = 1,
+  lwd = 1,
+  border = "black",
+  cols = c("white", "black"),
+  text.col = "black")
+
+addscalebar(
+  plotunit = NULL,
+  plotepsg = NULL,
+  widthhint = 0.25,
+  unitcategory = "metric",
+  htin = 0.1, padin = c(0.15, 0.15),
+  style = "bar",
+  bar.cols = c("black", "white"),
+  lwd = 1,
+  linecol = "black",
+  tick.cex = 0.7,
+  labelpadin = 0.08,
+  label.cex = 0.8,
+  label.col = "black",
+  pos = "bottomright")
+
+
+plot(world$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = c(-76, -43),
+     ylim = c(-14, 12),
+     bgc = alpha("lightblue", 0.5),
+     main = "Distribution of Koriabo Pottery"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(koriaboPottery$geometry, 
+     col = alpha("red", 0.5),
+     border = alpha("gray20", 0.3),
+     add = TRUE
+)
+
+addnortharrow(
+  pos = "topright",
+  padin = c(0.15, 0.15),
+  scale = 1,
+  lwd = 1,
+  border = "black",
+  cols = c("white", "black"),
+  text.col = "black")
+
+addscalebar(
+  plotunit = NULL,
+  plotepsg = NULL,
+  widthhint = 0.25,
+  unitcategory = "metric",
+  htin = 0.1, padin = c(0.15, 0.15),
+  style = "bar",
+  bar.cols = c("black", "white"),
+  lwd = 1,
+  linecol = "black",
+  tick.cex = 0.7,
+  labelpadin = 0.08,
+  label.cex = 0.8,
+  label.col = "black",
+  pos = "bottomright")
+
+```
+
+
+## 3. The Radiocarbon dataset
+
+#### **The total amount of radiocarbon dates**
+An amount of 108 radiocarbon dates were systematically compiled and categorised by geographical regions. The dataset encompasses 41 distinct archaeological sites distributed across five designated regions, which we have identified as follows: 1) Western Guyana; 2) Suriname; 3) French Guiana; 4) Amapá-Estuary; and 5) Lower Amazon/Xingu-Iriri rivers (LA/Xingu-Iriri). 
+
+
+All radiocarbon dates within this dataset pertain to sites either attributed to the presence of Koriabo pottery (settlements) or to contexts featuring specific deposits of Koriabo ceramic vessels (traded ceramics). The largest number of radiocarbon dates is associated with sites in French Guiana (46), while Western Guyana contributes only four dates. Additionally, we have included dates linked to the Cacapari phase of the lower Xingu River (Perota 1992), which we consider to be assigned with Koriabo tradition (for further details on the radiocarbon dataset, please refer to the Supplementary Material).
+
+
+```{r boxplot_c14dates, echo = FALSE, message = FALSE, fig.align = 'center'}
+#Normal boxplot
+boxplot_dates <- ggplot(c14dates, aes(x = region, y = age, fill = region), xlab = "Age (years BP)")
+boxplot_dates <- boxplot_dates + xlab("Region") + ylab("Age (years BP)")
+boxplot_dates <- boxplot_dates +stat_boxplot(geom = "errorbar", width = 0.2)
+boxplot_dates <- boxplot_dates + geom_boxplot(outlier.colour = "red")
+boxplot_dates <- boxplot_dates + stat_summary(fun.data = mean_cl_normal, geom = "linerange", colour = "black", linewidth = 4, alpha = 0.3)
+boxplot_dates <- boxplot_dates + stat_summary(fun = mean, geom = "point", colour = "orange", size = 2)
+boxplot_dates <- boxplot_dates + geom_jitter(color = "black", size = 1)
+boxplot_dates <- boxplot_dates + theme_classic()
+boxplot_dates <- boxplot_dates + labs(title = "Distribution of radiocarbon ages by region")
+boxplot_dates <- boxplot_dates + labs(subtitle ="Number of Radiocarbon dates: 106")
+
+#Violin boxplot
+boxplot_violin <- ggplot(c14dates, aes(x = region, y = age, fill = region), xlab = "Age (years BP)")
+boxplot_violin <- boxplot_violin + xlab("Region") + ylab("Age (years BP)")
+boxplot_violin <- boxplot_violin + geom_violin()
+boxplot_violin <- boxplot_violin +stat_boxplot(geom = "errorbar", width = 0.2)
+boxplot_violin <- boxplot_violin + stat_summary(fun.data = mean_cl_normal, geom = "linerange", colour = "black", linewidth = 4, alpha = 0.3)
+boxplot_violin <- boxplot_violin + stat_summary(fun = mean, geom = "point", colour = "orange", size = 2)
+boxplot_violin <- boxplot_violin + geom_jitter(color = "black", size = 1)
+boxplot_violin <- boxplot_violin + theme_classic()
+boxplot_violin <- boxplot_violin + labs(title = "Distribution of radiocarbon ages by region")
+boxplot_violin <- boxplot_violin + labs(subtitle ="Number of Radiocarbon dates: 106")
+  
+  
+plot(boxplot_dates) 
+plot(boxplot_violin) 
+```
+
+The distribution of radiocarbon ages illustrates a discernible pattern, with earlier dates concentrated along the Western Guyana coast and in Suriname, while most dates fall within the range of 1000 to 500 years BP. The plot reveals two outliers associated with the Amapá-Estuary subset. To accommodate this, two separate models were constructed—one incorporating these outliers and another omitting them.
+
+The radiocarbon modeling was executed with the Rcarbon package within RStudio (Crema & Bevan 2021). All dates were calibrated and aggregated in a Monte-Carlo Summed Probability Distribution (MCSPD) binned by site-occupation in intervals of 200 years The MCSPD shows a first growth moment starting after AD 500 and a second one at AD 1000. A third peak after AD 1500 is related both to the persistence of Koriabo pottery in early colonial times and to some dates after 300 BP (Figure 5). Furthermore, additional tests - including the Exponential Growth Model (EGM), Permutation and Spatial Permutation tests - were conducted, adhering to the criteria outlined by Crema & Bevan (2021). All radiocarbon dates underwent calibration employing a mixed atmospheric curve, incorporating 50% of SHCal20 and 50% of IntCal20, as recommended by Marsh et al. (2018) for Tropical South America.
+
+
+```{r plot_datesTable, echo = FALSE, message = FALSE, fig.align = 'center'}
+
+
+#Plotting the table
+knitr::kable(
+  datesTable,
+  col.names = c('Site', 'Laboratory Number', '^14^C Age', 'Errors', 'Exclude?', "Country/State", "Region", "Original Affiliation", "Culture", "Context", "Source")
+)
+
+
+```
+
+
+
+#### **References**
+
+BARRETO, B. de S. 2015. Diacronia e cultura material no sítio Laranjal do Jari 01: um assentamento associado às cerâmicas Jari e Koriabo, baixo rio Jari, sul do Amapá (670 –1450 AD) (Master Dissertation). Dissertação de Mestrado, Laranjeiras: Universidade Federal de Sergipe.
+
+
+BARRETO, C., H. NASCIMENTO & E. da S. PEREIRA. 2016. Lugares persistentes e identidades distribuídas no baixo Amazonas: complexos cerâmicos pré-coloniais de Monte Alegre, Pará. Revista de Arqueologia 29: 55–85.
+
+
+CASTRO, A.M., L.M. MÜLLER, Í.L.S. HEINEN & R. KIPNIS. 2020. The Koriabo Pottery at the Volta Grande do Rio Xingu, in Koriabo from the Caribbean Sea to the Amazon River: 203–25.
+
+
+Crema, E.R. & A. Bevan. 2021. Inference from large sets of radiocarbon dates: software and methods. Radiocarbon 63. Cambridge University Press: 23–39.
+
+
+FERRAZ, T. et al. 2023. Genomic history of coastal societies from eastern South America. Nature Ecology & Evolution 7: 1315–30. https://doi.org/10.1038/s41559-023-02114-9. https://doi.org/10.1038/s41559-023-02114-9.
+
+
+GAMBIM JÚNIOR, A. 2016. Corpo, vida e morte na foz do rio Amazonas: as estruturas funerárias do sítio Curiaú Mirim I/AP. Rio de Janeiro: Universidade do Rio de Janeiro.
+
+
+HILDEBRAND, M. 2008. Saut-Saillat: une occupation diachronique sur berge haute (Guyane Française). Cayenne.
+
+
+Marsh, E.J., M.C. Bruno, S.C. Fritz, P. Baker, J.M. Capriles & C.A. Hastorf. 2018. IntCal, SHCal, or a Mixed Curve? Choosing a 14C Calibration Curve for Archaeological and Paleoenvironmental Records from Tropical South America. Radiocarbon 60: 925–40.
+
+
+MÜLLER, L.M., R. KIPNIS, M. do C. MATTOS & S.B. CALDARELLI. 2016. Considerações iniciais sobre a cerâmica arqueológica da Volta Grande do Xingu, in C. Barreto, H.P. Lima & C.J. Betancourt (ed.) Cerâmicas Arqueológicas da Amazônia: Rumo a uma nova síntese: 196–209. Belém: Iphan/Museu Paraense Emílio Goeldi.
+
+
+PANACHUK, L. 2016. A diversidade das coisas: modos de expressão na cerâmica Tupiguarani da Ilha de São Luís e arredores, Maranhão/Brasil. Arquivos do Museu de História Natural e Jardim Botânico da UFMG 25.
+
+
+PEROTA, C. 1992. Adaptação agrícola no baixo Xingu, in B.J. Meggers (ed.) Prehistoria Sudamericana: 211–18. Santiago: Taraxacum.
+
+
+SALDANHA, J.D. de M. & M.P. CABRAL. 2010. Arqueologia do Amapá: reavaliação e novas perspectivas., in ithe P.V. Guapindaia (ed.) EIAA I. Vol. 1. Belém: Museu Paraense Emílio Goeldi.
+
+
+SCIENTIA, C.C. 2020. Arqueologia Preventiva nas áreas de intervenção da UHE Belo Monte, Rio Xingu, PA: Relatório Parcial 15 (Atividades de Laboratório). São Paulo.
+
+
+VACHER, S., S. JÉREMIE & J. BRIAND. 1998. Amérindiens du Sinnamary (Guyane): archéologie en forêt équatoriale. (ed.)D. d’archéologie française. Paris: Maison des Sciences de L’Home.
+
+
+VAN DEN BEL, M. 2010. A Koriabo site on the lower Maroni river: results of the preventive archaeological excavation at Crique Sparouine, French Guiana, in E. Pereira & V. Guapindaia (ed.) Arqueologia Amazônica, 1: 62–93. Belém: Museu Paraense Emílio Goeldi.
+
+
+VAN DEN BEL, M. 2015. Archaeological investigations between Cayenne Island and the Maroni river: a cultural sequence of western coast French Guiana from 5000 BP to present. Leiden: Sidestone Press.
+
+
+VAN DEN BEL, M., M. HILDEBRAND & M. MESTRE. 2020. Koriabo in French Guiana: cultural expansion in the Guianas during the late prehistoric times, in C. Barreto, H.P. Lima, S. Rostain & C.L. Hofman (ed.) Koriabo: from the Caribbean Sea to the Amazon River: 81–96. Belém: Museu paraense Emilio Goeldi/Leiden University.
+
+
+VERSTEEG, A. 2003. Suriname Before Columbus. Paramaribo: Stichting Surinaams Museum.
+
+
+WILLIAMS, D. 2003. Prehistoric Guiana. Kingston ; Miami: Ian Randle Publishers.
+
+
+
+## 4. Model with outliers
+
+#### **Calibrating ^14^C Dates**
+```{r calibration, message = FALSE, results = 'hide', cache = TRUE, dependson = "raw_data"}
+# Calibrating the radiocarbon dates
+
+c14koriabo <- subset(c14dates, culture == "1 - Koriabo") # Extracting a Koriabo subset of Radiocaron dates
+
+c14calibration_koriabo <- calibrate(
+  x = c14koriabo$age,          # The radiocarbon age for each of the 135 radiocarbon dates
+  errors = c14koriabo$std,     # Standard deviation of each radiocarbon date
+  method = "mixed",            # Method for mixing the radiocarbon atmospheric curves
+  mixed.curves = TRUE,         # Enabling the argument for mixing the atmospheric curves
+  intcal20 = intcal20(),       # Calling the IntCal20 atmospheric curve for Northern Hemisphere
+  shcal20 = shcal20(),         # Calling the ShCal20 atmospheric curve for Southern Hemisphere
+  normalised = FALSE           # The data are not normalized in order to avoid false peaks in the SPD model
+)
+
+# Creating a Time Range object for running the analyses
+timeRange <- c(
+  2300,  # Starting point on 2300 BP (BC 300)
+  300    # Ending point on 300 BP (AD 1700)
+) 
+```
+
+
+### **Summed Probability Distribution (SPD) and a Growth Population Model**
+
+#### **Summed Probability Distribution (SPD)**
+```{r SPD_model, results = 'hide', cache = TRUE}
+spd_koriabo <- spd(                  # Generation fo the SPD of Santarém radiocarbon dates
+  c14calibration_koriabo,            # Using the Koriabo radiocarbon calibrations
+  timeRange = timeRange              # Time Range from 2300 BP to 300 BP 
+)
+```
+
+```{r plot_SPD, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  spd_koriabo,            #SPD object for all Radiocarbon dates
+  calendar = 'BCAD',      #Plot the SPD Model in BC/AD years
+  main = "Summed Probability Distribution (SPD)" #Label
+  )
+
+plot(                     #Plotting the smoothing line with a bin value of 200 years
+  spd_koriabo,           #SPD object for all radiocarbon dates
+  calendar = 'BCAD',      #Calendar in BC/AD years
+  runm = 200,             #Smoothed distribution with a binning of 200 years
+  add = TRUE,             #Add the line
+  type = "simple",        #Simple line
+  col = "red",            #Line colour = Red
+  lwd = 2,                #Line Thickness = 2
+  lty = 2
+)
+```
+
+#### **Binning the SPD Model**
+```{r binning_SPD, results = 'hide'}
+bins_c14calibration <- binPrep(    # Generation of an object for the bins
+  sites = c14koriabo$site,     # Column for archaeological sites
+  ages = c14koriabo$age,       # Column with the radiocarbon age values
+  h = 100                      # Parameter for binning between an interval of 100 years
+  )
+
+binned_spd_koriabo <- spd(        # Generation of the final binned SPD model 
+  c14calibration_koriabo,          # Object with all the unnormalised radiocarbon dates
+  bins = bins_c14calibration,      # Object with the bins values for binning the model
+  timeRange = timeRange,           # Time Range of the analysis frmo 2300 to 300 BP
+)
+```
+```{r plot_binned_SPD, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  binned_spd_koriabo,    #SPD object for all Radiocarbon dates
+  calendar = 'BCAD',      #Plot the SPD Model in BC/AD years
+  main = "Binned Radiocarbon SPD of Koriabo Pottery" # Plot Title
+)
+
+plot(                     #Plotting the smoothing line with a bin value of 200 years
+  binned_spd_koriabo,     #SPD object for all radiocarbon dates
+  calendar = 'BCAD',      #Calendar in BC/AD years
+  runm = 200,             #Smoothed distribution with a binning of 200 years
+  add = TRUE,             #Add the line
+  type = "simple",        #Simple line
+  col = "red",            #Line colour = Red
+  lwd = 2,                #Line Thickness = 2
+  lty = 2
+)
+```
+```{r plot_binsense, echo = FALSE, results = 'hide', fig.align='center', out.width = '100%'}
+# Plot the binsense for the radiocarbon SPD
+binsense <- binsense(
+  x = c14calibration_koriabo,
+  y = c14koriabo$site,
+  h = seq(0, 300, 100),
+  calendar = 'BCAD',
+  timeRange = timeRange
+)
+```
+
+
+#### ^14^C Kernel Density Estimation Model (KDE)
+```{r KDE, results = 'hide'}
+C14randates <- sampleDates(
+  c14calibration_koriabo,
+  bins = bins_c14calibration,
+  nsim = 100,
+  verbose = FALSE
+)
+
+c14koriabo_ckde <- ckde(
+  C14randates,
+  timeRange = timeRange,
+  bw = 100
+)
+```
+
+```{r plot_kde, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  c14koriabo_ckde,
+  type = 'multiline',
+  calendar = 'BCAD',
+  xlim = c(-200, 1600),
+  main = "14C Kernel Density Estimation (KDE) for Koriabo Pottery"
+)
+```
+
+#### **Logistic Growth Model**
+```{r logistic_model, results = FALSE, warning = FALSE, message = FALSE}
+
+#Smoothing SPD for the logistic model
+Koriabo_spdSmoothed <-  spd(c14calibration_koriabo,timeRange=timeRange,bins=bins_c14calibration,runm=100)
+
+# nls function for logistic model
+logFit <- nls(
+  PrDens~SSlogis(
+    calBP,
+    Asym,
+    xmid,
+    scale),
+  data=Koriabo_spdSmoothed$grid,
+  control=nls.control(maxiter=200),
+  start=list(Asym=0.2,xmid=1000,scale=-100))
+
+# Data frame containing the fitted values
+logFitDens=data.frame(calBP=Koriabo_spdSmoothed$grid$calBP,PrDens=SSlogis(input=Koriabo_spdSmoothed$grid$calBP,Asym=coefficients(logFit)[1],xmid=coefficients(logFit)[2],scal=coefficients(logFit)[3]))
+
+
+# Final test for the logistic model
+c14koriabo_logistic <- modelTest(
+  c14calibration_koriabo,
+  errors = c14koriabo$std,
+  bins = bins_c14calibration,
+  nsim = 100,
+  timeRange = c(2500,0),
+  model = "custom",
+  predgrid=logFitDens,
+  runm = 100,
+  raw = TRUE
+)
+
+
+```
+
+
+```{r plot logistic_model, echo = FALSE, warning = FALSE, fig.align = 'center', out.width = '100%'}
+
+# Plot the Logistic Model
+plot(c14koriabo_logistic,
+    calendar = 'BCAD',
+    lwd = 2,
+    main = "Logistic Growth Model (LGM) for Koriabo Pottery"
+)
+```
+
+
+#### **Exponential Growth Model**
+```{r exp_model, results = FALSE, warning = FALSE, message = FALSE}
+
+# Exponential Growth Model test
+c14koriabo_expnull <- modelTest(
+  c14calibration_koriabo,
+  errors = c14koriabo$std,
+  bins = bins_c14calibration,
+  nsim = 100,
+  timeRange = c(2500,0),
+  model = "exponential",
+  runm = 100
+)
+
+```
+
+
+
+```{r plot exp_model, echo = FALSE, warning = FALSE, fig.align = 'center', out.width = '100%'}
+
+# Plot the Exponential Growth model
+plot(c14koriabo_expnull,
+     calendar = 'BCAD',
+     lwd = 2,
+     main = "Exponential Growth Model (EGM) for Koriabo Pottery"
+)
+summary(c14koriabo_expnull)
+
+```
+
+
+```{r plot_localgrowth, echo = FALSE, out.width = '100%'}
+plot(c14koriabo_expnull, type = 'roc', calendar = 'BCAD', lwd = 2, main = 'Local Growth Change Rates')
+```
+
+
+#### **Permutation Tests and SPD's by Region**
+```{r perm_test, results = FALSE}
+permTest_region <- permTest(
+  x = c14calibration_koriabo,
+  marks = c14koriabo$region,
+  timeRange = c(2700,0),
+  bins = bins_c14calibration,
+  nsim = 100,
+  runm = 50
+)
+
+```
+
+
+
+```{r stackCalSPD, warning = FALSE}
+permTest_region_stack_spd <- stackspd(
+  x = c14calibration_koriabo,
+  group = c14koriabo$region,
+  timeRange = c(3000,0),
+  bins = bins_c14calibration,
+  runm = 50,
+  verbose = FALSE
+)
+```
+
+
+
+```{r plot_permtest, echo = FALSE, out.width = '100%'}
+par(mar = c(2,2,2,2), mfrow = c(5,1))
+plot(permTest_region, focalm = 1, calendar = 'BCAD', lwd = 2, main = "Western Guiana")
+plot(permTest_region, focalm = 2, calendar = 'BCAD', lwd = 2, main = "Suriname")
+plot(permTest_region, focalm = 3, calendar = 'BCAD', lwd = 2, main = "French Guiana")
+plot(permTest_region, focalm = 4, calendar = 'BCAD', lwd = 2, main = "Amapa-Estuary")
+plot(permTest_region, focalm = 5, calendar = 'BCAD', lwd = 2, main = "Lower Amazon / Xingu-Iriri Rivers")
+
+```
+```{r plot stack_spd, echo = FALSE, out.width = '100%'}
+par(mfrow=c(1,1))
+plot(permTest_region_stack_spd, type = 'multipanel',  calendar = 'BCAD')
+```
+
+
+
+#### **Spatial Permutation Test**
+```{r spatial_perm, results = FALSE}
+allsites <- unique(data.frame(id = c14koriabo$site, lat = c14koriabo$lat, long = c14koriabo$long))
+
+allsites <- st_as_sf(allsites, coords = c('long','lat'), crs = 4326)
+
+breaks <- seq(1200,500,-100)
+
+timerange_spatialperm <- c(1200,500)
+
+koriabo_spd <- spd(
+  x = c14calibration_koriabo,
+  bins = bins_c14calibration,
+  timeRange = timerange_spatialperm
+)
+
+spatial_perm <- sptest(
+  calDates = c14calibration_koriabo,
+  bins = bins_c14calibration,
+  timeRange = timerange_spatialperm,
+  locations = allsites,
+  locations.id.col = 'id',
+  h = 100,
+  kernel = 'gaussian',
+  permute = 'locations',
+  nsim = 100,
+  breaks = breaks,
+  ncores = 1,
+  verbose = FALSE
+)
+
+world <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
+
+xrange <- st_bbox(allsites)[c(1,3)]
+yrange <- st_bbox(allsites)[c(2,4)]
+
+```
+
+
+
+##### **Growth Rates**
+```{r plot_GRates, echo = FALSE, out.width = '100%'}
+plot(spd2rc(koriabo_spd, breaks = breaks), main = 'Growth Rates of Koriabo Pottery')
+```
+
+
+
+
+##### Spatial Permutation Test (Growth Rate)
+```{r plot_spatialTestGrowthRates, echo = FALSE, out.width= '100%'}
+opts_chunk$set(echo = FALSE, out.width = '100%', fig.align = 'center')
+#Setting up the page output format of the Spatial Permutation Test
+#par(mar=c(2,2,2,2), mfrow=c(3,1))
+
+#Plot 1
+plot(world$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 1000-900 BP to 900-800 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+
+plot(spatial_perm,
+     index = 3,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     alpha = 1.5,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 2
+plot(world$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 900-800 BP to 800-700 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm,
+     index = 4,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 3
+plot(world$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 800-700 BP to 700-600 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm,
+     index = 5,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+
+```
+
+
+
+
+##### **Spatial Permutation Test (Test Results)**
+```{r plot_spatialpermTest, echo = FALSE, out.width= '100%'}
+opts_chunk$set(echo = FALSE, out.width = '100%', fig.align = 'center')
+#Setting up the page output format of the Spatial Permutation Test
+#par(mar=c(2,2,2,2), mfrow=c(2,1))
+
+#Plot 1
+plot(world$geometry,
+     col = "antiquewhite2",
+     bgc = alpha("lightblue3", 0.35),
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 1000-900 BP to 900-800 BP)"
+) 
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+
+GR_plot1 <- plot(spatial_perm,
+     index = 3,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     alpha = 1.5,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 2
+plot(world$geometry,
+     col = "antiquewhite2",
+     bgc = alpha("lightblue3", 0.35),
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 900-800 BP to 800-700 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm,
+     index = 4,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 3
+plot(world$geometry,
+     col = "antiquewhite2",
+     bgc = alpha("lightblue3", 0.35),
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 800-700 BP to 700-600 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm,
+     index = 5,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+```
+
+
+
+## 5. Model without outliers
+
+
+#### **Calibrating ^14^C Dates**
+
+```{r calibration2, message = FALSE, results = 'hide', cache = TRUE, dependson = "raw_data"}
+# Calibrating the radiocarbon dates
+
+c14koriabo2 <- subset(c14dates, culture == "1 - Koriabo") # Extracting a Koriabo subset of Radiocaron dates
+
+c14koriabo2 <- filter(c14koriabo2, Exclude != "Yes")
+
+c14calibration_koriabo2 <- calibrate(
+  x = c14koriabo2$age,          # The radiocarbon age for each of the 135 radiocarbon dates
+  errors = c14koriabo2$std,     # Standard deviation of each radiocarbon date
+  method = "mixed",            # Method for mixing the radiocarbon atmospheric curves
+  mixed.curves = TRUE,         # Enabling the argument for mixing the atmospheric curves
+  intcal20 = intcal20(),       # Calling the IntCal20 atmospheric curve for Northern Hemisphere
+  shcal20 = shcal20(),         # Calling the ShCal20 atmospheric curve for Southern Hemisphere
+  normalised = FALSE           # The data are not normalized in order to avoid false peaks in the SPD model
+)
+
+# Creating a Time Range object for running the analyses
+timeRange <- c(
+  2300,  # Starting point on 2300 BP (BC 300)
+  300    # Ending point on 300 BP (AD 1700)
+) 
+```
+
+
+### **Summed Probability Distribution (SPD) and a Growth Population Model**
+
+#### **Summed Probability Distribution (SPD)**
+```{r SPD_model2, results = 'hide', cache = TRUE}
+spd_koriabo2 <- spd(                  # Generation fo the SPD of Santarém radiocarbon dates
+  c14calibration_koriabo2,            # Using the Koriabo radiocarbon calibrations
+  timeRange = timeRange              # Time Range from 2300 BP to 300 BP 
+)
+```
+
+```{r plot_SPD2, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  spd_koriabo2,            #SPD object for all Radiocarbon dates
+  calendar = 'BCAD',      #Plot the SPD Model in BC/AD years
+  main = "Summed Probability Distribution (SPD)" #Label
+  )
+
+plot(                     #Plotting the smoothing line with a bin value of 200 years
+  spd_koriabo2,           #SPD object for all radiocarbon dates
+  calendar = 'BCAD',      #Calendar in BC/AD years
+  runm = 200,             #Smoothed distribution with a binning of 200 years
+  add = TRUE,             #Add the line
+  type = "simple",        #Simple line
+  col = "red",            #Line colour = Red
+  lwd = 2,                #Line Thickness = 2
+  lty = 2
+)
+```
+
+#### **Binning the SPD Model**
+```{r binning_SPD2, results = 'hide'}
+bins_c14calibration2 <- binPrep(    # Generation of an object for the bins
+  sites = c14koriabo2$site,     # Column for archaeological sites
+  ages = c14koriabo2$age,       # Column with the radiocarbon age values
+  h = 100                      # Parameter for binning between an interval of 100 years
+  )
+
+binned_spd_koriabo2 <- spd(        # Generation of the final binned SPD model 
+  c14calibration_koriabo2,          # Object with all the unnormalised radiocarbon dates
+  bins = bins_c14calibration2,      # Object with the bins values for binning the model
+  timeRange = timeRange,           # Time Range of the analysis frmo 2300 to 300 BP
+)
+```
+```{r plot_binned_SPD2, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  binned_spd_koriabo2,    #SPD object for all Radiocarbon dates
+  calendar = 'BCAD',      #Plot the SPD Model in BC/AD years
+  main = "Binned Radiocarbon SPD of Koriabo Pottery" # Plot Title
+)
+
+plot(                     #Plotting the smoothing line with a bin value of 200 years
+  binned_spd_koriabo2,     #SPD object for all radiocarbon dates
+  calendar = 'BCAD',      #Calendar in BC/AD years
+  runm = 200,             #Smoothed distribution with a binning of 200 years
+  add = TRUE,             #Add the line
+  type = "simple",        #Simple line
+  col = "red",            #Line colour = Red
+  lwd = 2,                #Line Thickness = 2
+  lty = 2
+)
+```
+```{r plot_binsense2, echo = FALSE, results = 'hide', fig.align='center', out.width = '100%'}
+# Plot the binsense for the radiocarbon SPD
+binsense2 <- binsense(
+  x = c14calibration_koriabo2,
+  y = c14koriabo2$site,
+  h = seq(0, 300, 100),
+  calendar = 'BCAD',
+  timeRange = timeRange
+)
+```
+
+
+#### ^14^C Kernel Density Estimation Model (KDE)
+```{r KDE2, results = 'hide'}
+C14randates2 <- sampleDates(
+  c14calibration_koriabo2,
+  bins = bins_c14calibration2,
+  nsim = 100,
+  verbose = FALSE
+)
+
+c14koriabo_ckde2 <- ckde(
+  C14randates2,
+  timeRange = timeRange,
+  bw = 100
+)
+```
+
+```{r plot_kde2, echo = FALSE, fig.align = 'center', out.width = '100%'}
+plot(
+  c14koriabo_ckde2,
+  type = 'multiline',
+  calendar = 'BCAD',
+  xlim = c(-200, 1600),
+  main = "14C Kernel Density Estimation (KDE) for Koriabo Pottery"
+)
+```
+
+#### **Logistic Growth Model**
+```{r logistic_model2, results = FALSE, warning = FALSE, message = FALSE}
+
+#Smoothing SPD for the logistic model
+Koriabo_spdSmoothed2 <-  spd(c14calibration_koriabo2,timeRange=timeRange,bins=bins_c14calibration2,runm=100)
+
+# nls function for logistic model
+logFit2 <- nls(
+  PrDens~SSlogis(
+    calBP,
+    Asym,
+    xmid,
+    scale),
+  data=Koriabo_spdSmoothed2$grid,
+  control=nls.control(maxiter=200),
+  start=list(Asym=0.2,xmid=1000,scale=-100))
+
+# Data frame containing the fitted values
+logFitDens2 <- data.frame(calBP=Koriabo_spdSmoothed2$grid$calBP,PrDens=SSlogis(input=Koriabo_spdSmoothed2$grid$calBP,Asym=coefficients(logFit)[1],xmid=coefficients(logFit)[2],scal=coefficients(logFit)[3]))
+
+
+# Final test for the logistic model
+c14koriabo_logistic2 <- modelTest(
+  c14calibration_koriabo2,
+  errors = c14koriabo2$std,
+  bins = bins_c14calibration2,
+  nsim = 100,
+  timeRange = c(2500,0),
+  model = "custom",
+  predgrid=logFitDens2,
+  runm = 100
+)
+
+
+```
+
+
+```{r plot logistic_model2, echo = FALSE, warning = FALSE, fig.align = 'center', out.width = '100%'}
+
+# Plot the Logistic Model
+plot(c14koriabo_logistic2,
+    calendar = 'BCAD',
+    lwd = 2,
+    main = "Logistic Growth Model for Koriabo Pottery"
+)
+```
+
+
+#### **Exponential Growth Model**
+```{r exp_model2, results = FALSE, warning = FALSE, message = FALSE}
+
+# Exponential Growth Model test
+c14koriabo_expnull2 <- modelTest(
+  c14calibration_koriabo2,
+  errors = c14koriabo2$std,
+  bins = bins_c14calibration2,
+  nsim = 100,
+  timeRange = c(2500,0),
+  model = "exponential",
+  runm = 100
+)
+
+```
+
+
+
+```{r plot exp_model2, echo = FALSE, warning = FALSE, fig.align = 'center', out.width = '100%'}
+
+# Plot the Exponential Growth model
+plot(c14koriabo_expnull2,
+     calendar = 'BCAD',
+     lwd = 2,
+     main = "Exponential Growth Model (EGM) for Koriabo Pottery"
+)
+summary(c14koriabo_expnull2)
+
+```
+
+
+```{r plot_localgrowth2, echo = FALSE, out.width = '100%'}
+plot(c14koriabo_expnull2, type = 'roc', calendar = 'BCAD', lwd = 2, main = 'Local Growth Change Rates')
+```
+
+
+#### **Permutation Tests and SPD's by Region**
+```{r perm_test2, results = FALSE}
+permTest_region2 <- permTest(
+  x = c14calibration_koriabo2,
+  marks = c14koriabo2$region,
+  timeRange = c(2700,0),
+  bins = bins_c14calibration2,
+  nsim = 100,
+  runm = 50
+)
+
+```
+
+
+
+```{r stackCalSPD2, warning = FALSE}
+permTest_region_stack_spd2 <- stackspd(
+  x = c14calibration_koriabo2,
+  group = c14koriabo2$region,
+  timeRange = c(3000,0),
+  bins = bins_c14calibration2,
+  runm = 50,
+  verbose = FALSE
+)
+```
+
+
+
+```{r plot_permtest2, echo = FALSE, out.width = '100%'}
+par(mar = c(2,2,2,2), mfrow = c(5,1))
+plot(permTest_region2, focalm = 1, calendar = 'BCAD', lwd = 2, main = "Western Guiana")
+plot(permTest_region2, focalm = 2, calendar = 'BCAD', lwd = 2, main = "Suriname")
+plot(permTest_region2, focalm = 3, calendar = 'BCAD', lwd = 2, main = "French Guiana")
+plot(permTest_region2, focalm = 4, calendar = 'BCAD', lwd = 2, main = "Amapa-Estuary")
+plot(permTest_region2, focalm = 5, calendar = 'BCAD', lwd = 2, main = "Lower Amazon / Xingu-Iriri Rivers")
+
+```
+```{r plot stack_spd2, echo = FALSE, out.width = '100%'}
+par(mfrow=c(1,1))
+plot(permTest_region_stack_spd2, type = 'multipanel',  calendar = 'BCAD')
+```
+
+
+
+#### **Spatial Permutation Test**
+```{r spatial_perm2, results = FALSE}
+allsites2 <- unique(data.frame(id = c14koriabo2$site, lat = c14koriabo2$lat, long = c14koriabo2$long))
+
+allsites2 <- st_as_sf(allsites2, coords = c('long','lat'), crs = 4326)
+
+breaks2 <- seq(1300,500,-100)
+
+timerange_spatialperm2 <- c(1300,500)
+
+koriabo_spd2 <- spd(
+  x = c14calibration_koriabo2,
+  bins = bins_c14calibration2,
+  timeRange = timerange_spatialperm2
+)
+
+spatial_perm2 <- sptest(
+  calDates = c14calibration_koriabo2,
+  bins = bins_c14calibration2,
+  timeRange = timerange_spatialperm2,
+  locations = allsites2,
+  locations.id.col = 'id',
+  h = 100,
+  kernel = 'gaussian',
+  permute = 'locations',
+  nsim = 100,
+  breaks = breaks2,
+  ncores = 1,
+  verbose = FALSE
+)
+
+world2 <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
+
+xrange2 <- st_bbox(allsites)[c(1,3)]
+yrange2 <- st_bbox(allsites)[c(2,4)]
+
+```
+
+
+
+##### **Growth Rates**
+```{r plot_GRates2, echo = FALSE, out.width = '100%'}
+plot(spd2rc(koriabo_spd2, breaks = breaks2), main = 'Growth Rates of Koriabo Pottery')
+```
+
+
+
+
+##### Spatial Permutation Test (Growth Rate)
+```{r plot_spatialTestGrowthRates2, echo = FALSE, out.width= '100%'}
+opts_chunk$set(echo = FALSE, out.width = '100%', fig.align = 'center')
+#Setting up the page output format of the Spatial Permutation Test
+#par(mar=c(2,2,2,2), mfrow=c(3,1))
+
+#Plot 1
+plot(world2$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 1000-900 BP to 900-800 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+
+plot(spatial_perm2,
+     index = 3,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     alpha = 1.5,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 2
+plot(world2$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 900-800 BP to 800-700 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 4,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 3
+plot(world2$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 800-700 BP to 700-600 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 5,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 4
+plot(world2$geometry,
+     col = "antiquewhite3",
+     border = "gray20",
+     xlim = xrange,
+     ylim = yrange,
+     main = "Growth Rate (from 700-600 BP to 600-500 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue4", 0.35),
+  border = alpha("lightblue4", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 6,
+     option = "raw",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+
+```
+
+
+
+
+##### **Spatial Permutation Test (Test Results)**
+```{r plot_spatialpermTest2, echo = FALSE, out.width= '100%'}
+opts_chunk$set(echo = FALSE, out.width = '100%', fig.align = 'center')
+#Setting up the page output format of the Spatial Permutation Test
+#par(mar=c(2,2,2,2), mfrow=c(2,1))
+
+#Plot 1
+plot(world2$geometry,
+     col = "antiquewhite2",
+     border = "gray20",
+     bgc = alpha("lightblue3", 0.35),
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 1000-900 BP to 900-800 BP)"
+) 
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+
+plot(spatial_perm2,
+     index = 3,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     alpha = 1.5,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 2
+plot(world2$geometry,
+     col = "antiquewhite2",
+     border = "gray20",
+     bgc = alpha("lightblue3", 0.35),
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 900-800 BP to 800-700 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 4,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 3
+plot(world2$geometry,
+     col = "antiquewhite2",
+     border = "gray20",
+     bgc = alpha("lightblue3", 0.35),
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 800-700 BP to 700-600 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 5,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+#Plot 4
+plot(world2$geometry,
+     col = "antiquewhite2",
+     border = "gray20",
+     bgc = alpha("lightblue3", 0.35),
+     xlim = xrange,
+     ylim = yrange,
+     main = "Test Results (from 700-600 BP to 600-500 BP)"
+)
+
+plot(
+  water$geometry,
+  col = alpha("lightblue3", 0.35),
+  border = alpha("lightblue3", 0.35),
+  add = TRUE
+)
+
+plot(spatial_perm2,
+     index = 6,
+     option = "test",
+     add = TRUE,
+     breakRange = c(-0.005,0.005),
+     breakLength = 7,
+     rd = 5,
+     legend = TRUE,
+     legSize = 0.7,
+     baseSize = 1.7,
+     location = "topright")
+
+```
+
+
+
+
+
+
+

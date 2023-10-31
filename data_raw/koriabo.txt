@@ -1,0 +1,41 @@
+site,lat,long,cal_early,cal_late,c14dates_amount,c14oldest_date_bp,standard_dev,country,region,definition
+Waiwiaru Market,7.829276,-59.238171,-400,67,1,2150,100,Guyana,Coastal Guyana,settlement
+Quartz Island,5.913763,-59.358994,-340,201,1,2030,70,Guyana,Mazaruni River,settlement
+Lanciana Island,5.878021,-59.290142,80,770,2,1780,100,Guyana,Mazaruni River,settlement
+Woi Creek,5.236946,-59.129558,775,1038,1,1090,50,Guyana,Mazaruni River,settlement
+Commetewane 1,5.776279,-54.927379,646,830,1,1310,45,Suriname,Coastal Suriname,settlement
+Hanover,5.495537,-55.178243,775,1016,1,1130,40,Suriname,Coastal Suriname,settlement
+Moengo-Boesmanhill,5.633025,-54.464435,900,1224,1,970,70,Suriname,Coastal Suriname,settlement
+Coreoni-Eiland,3.371589,-57.346295,1163,1299,1,785,50,Suriname,Suriname Hinterland,tradefind
+Blauwgrond 2,5.8415,-55.131644,1308,1460,1,520,50,Suriname,Coastal Suriname,settlement
+Moricokreek,5.75878,-54.781937,1326,1634,1,455,65,Suriname,Coastal Suriname,settlement
+Christiaankondre,5.710301,-54.024489,1405,1630,1,440,50,Suriname,Coastal Suriname,settlement
+Bigiston,5.423224,-54.140572,1423,1635,1,410,60,Suriname,Coastal Suriname,settlement
+Petit Saut 223,4.983406,-53.016724,995,1496,12,970,40,French Guiana,Sinnamary River,settlement
+Petit Saut 172,4.683466,-52.950117,1020,1407,5,965,60,French Guiana,Sinnamary River,settlement
+Petit Saut 230,4.933412,-53.033411,1168,1382,5,850,40,French Guiana,Sinnamary River,settlement
+Eva 2,5.285434,-52.858159,1650,1900,relative dating,relative dating,relative dating,French Guiana,Coastal French Guiana,settlement
+Crique Sparouine,5.251817,-54.253849,989,1410,4,1045,20,French Guiana,Lower Maroni River,settlement
+Chemin St Louis,5.472875,-54.047029,1049,1377,2,885,30,French Guiana,Lower Maroni River,settlement
+Tania,5.273265,-52.891938,1281,1610,2,673,24,French Guiana,Coastal French Guiana,settlement
+Saut Saillat,5.311628,-54.14825,1438,1623,3,426,19,French Guiana,Lower Maroni River,settlement
+Saut Mapaou/Mapaou,4.183454,-52.300109,1430,1697,2,410,60,French Guiana,Approuague River,settlement
+Pointe Morne,3.860545,-51.832916,1409,1487,6,520,25,French Guiana,Lower Oiapock River,settlement
+Pointe Balate,5.482238,-54.044541,1047,1643,5,920,30,Brazil (Amapa),Lower Maroni River,settlement
+MMX 01,0.818685,-51.874465,671,878,1,1260,40,Brazil (Amapa),Amapa Hinterland,settlement
+Barragem do Taboca,0.80026,-51.866679,1180,1278,1,810,30,Brazil (Amapa),Amapa Hinterland,settlement
+Laranjal do Jari 1,-0.822427,-52.51526,1052,1440,6,1180,30,Brazil (Amapa),Amapa Hinterland,settlement
+Laranjal do Jari 2,-0.835445,-52.507466,1226,1377,1,740,30,Brazil (Amapa),Amapa Hinterland,settlement
+Paredão Leste,0.851549,-51.290725,1300,1500,1,unknown,unknown,Brazil (Para),Amapa Hinterland,settlement
+Barcarena 1,-1.5172,-48.567157,994,1214,1,960,60,Brazil (Para),Para/Amazon Estuary,unknown
+Curiau Mirim,0.100407,-51.036693,1262,1623,4,720,30,Brazil (Amapa),Amapa/Amazon Estuary,tradefind
+PA-MT-59 Coroata,-2.06926,-54.173422,1301,1415,1,590,30,Brazil (Para),Lower Amazon,settlement
+Carrazedo,-1.589758,-51.928507,1260,1460,unknown,unknown,unknown,Brazil (Para),Lower Amazon,settlement
+Ibama,-1.806998,-51.439117,1110,1440,unknown,unknown,unknown,Brazil (Para),Lower Amazon,settlement
+PA-AL-17 Criajo,-2.723221,-51.940133,1053,1450,5,910,60,Brazil (Para),Middle Xingu,settlement
+PA-AL-39 Itapinima,-3.662967,-52.424232,1291,1616,5,640,80,Brazil (Para),Middle Xingu,unknown
+PA-AL-13 Boa Vista II,-2.785293,-52.077808,1054,1436,2,770,80,Brazil (Para),Middle Xingu,settlement
+Vila Rica 2,-3.288716,-51.857029,1158,1268,1,850,30,Brazil (Para),Middle Xingu,settlement
+Santo Antonio 10,-3.12936,-51.766895,1165,1265,1,843,27,Brazil (Para),Middle Xingu,settlement
+PA-AL-15 Cacarapi II,-2.65895,-52.064829,1050,1460,2,800,70,Brazil (Para),Middle Xingu,settlement
+PA-BI-04 Cachoeira Grande,-3.911179,-52.822356,1286,1429,1,600,60,Brazil (Pará),Iriri River,unknown

@@ -1,0 +1,42 @@
+﻿site,lat,long,cal_early,cal_late,c14oldest_date_bp,standard_dev,country,region,number_dates,outliers,definition,latitute,longitude
+Waiwaru Market,7.829276,-59.238171,-400,65,2150,100,Guyana,Western Guyana,1,No,Settlement,7.829276,-59.238171
+Quartz Island,5.913763,-59.358994,-340,201,2030,70,Guyana,Western Guyana,1,No,Settlement,5.913763,-59.358994
+Lanciana Island,5.878021,-59.290142,80,770,1780,100,Guyana,Western Guyana,2,No,Settlement,5.878021,-59.290142
+Woi Creek,5.236946,-59.129558,774,1040,1090,50,Guyana,Western Guyana,1,No,Settlement,5.236946,-59.129558
+Commetewane 1,5.776279,-54.927379,647,867,1310,45,Suriname,Suriname,1,No,Settlement,5.776279,-54.927379
+Hanover,5.495537,-55.178243,775,1017,1130,40,Suriname,Suriname,1,No,Settlement,5.495537,-55.178243
+Moengo-Boesmanhill,5.633025,-54.464435,900,1225,970,70,Suriname,Suriname,1,No,Settlement,5.633025,-54.464435
+Coreoni-Eiland,3.371589,-57.346295,1163,1377,785,50,Suriname,Suriname,1,No,Ceramic Trade,3.371589,-57.346295
+Blauwgrond 2,5.8415,-55.131644,1308,1463,520,50,Suriname,Suriname,1,No,Settlement,5.8415,-55.131644
+Moricokreek,5.75878,-54.781937,1327,1634,455,65,Suriname,Suriname,1,No,Settlement,5.75878,-54.781937
+Christiaankondre,5.710301,-54.024489,1406,1630,440,50,Suriname,Suriname,1,No,Settlement,5.710301,-54.024489
+Bigiston,5.423224,-54.140572,1423,1636,410,60,Suriname,Suriname,1,No,Settlement,5.423224,-54.140572
+Petit Saut 223,4.983406,-53.016724,995,1499,970,40,French Guiana,French Guiana,12,No,Ceramic Trade,4.983406,-53.016724
+Petit Saut 172,4.683466,-52.950117,1019,1409,965,60,French Guiana,French Guiana,5,No,Settlement,4.683466,-52.950117
+Petit Saut 230,4.933412,-53.033411,1167,1383,850,40,French Guiana,French Guiana,6,No,Settlement,4.933412,-53.033411
+Crique Sparouine,5.251817,-54.253849,1226,1413,750,25,French Guiana,French Guiana,2,No,Settlement,5.251817,-54.253849
+Chemin St Louis,5.472875,-54.047029,1050,1379,885,30,French Guiana,French Guiana,2,No,Settlement,5.472875,-54.047029
+Tania,5.273265,-52.891938,1281,1612,673,24,French Guiana,French Guiana,2,No,Settlement,5.273265,-52.891938
+Saut Saillat,5.311628,-54.14825,1159,1624,426,19,French Guiana,French Guiana,3,No,Settlement,5.311628,-54.14825
+Saut Mapaou/Mapaou,4.183454,-52.300109,1430,1698,410,60,French Guiana,French Guiana,2,No,Settlement,4.183454,-52.300109
+Pointe Morne,3.860545,-51.832916,1406,1612,520,25,French Guiana,French Guiana,7,No,Settlement,3.860545,-51.832916
+Pointe Balate,5.482238,-54.044541,1047,1644,920,30,Brazil (Amapá),French Guiana,5,No,Settlement,5.482238,-54.044541
+MMX 01,0.818685,-51.874465,670,880,1260,40,Brazil (Amapá),Amapá/Estuary,1,Yes,Settlement,0.818685,-51.874465
+Barragem do Taboca,0.80026,-51.866679,1180,1279,810,30,Brazil (Amapá),Amapá/Estuary,1,No,Settlement,0.80026,-51.866679
+Laranjal do Jari 1,-0.822427,-52.51526,776,1442,1180,30,Brazil (Amapá),Amapá/Estuary,7,Yes,Settlement,-0.822427,-52.51526
+Laranjal do Jari 2,-0.835445,-52.507466,1232,1415,740,30,Brazil (Amapá),Amapá/Estuary,4,No,Settlement,-0.835445,-52.507466
+Paredão Leste,0.851549,-51.290725,1421,1612,455,30,Brazil (Amapá),Amapá/Estuary,1,No,Settlement,0.851549,-51.290725
+Prainha de Pedra,0.853,-51.303,1407,1459,495,30,Brazil (Amapá),Amapá/Estuary,1,No,Settlement,0.853,-51.303
+Curiau Mirim,0.100407,-51.036693,1264,1396,720,30,Brazil (Amapá),Amapá/Estuary,5,No,Ceramic Trade,0.100407,-51.036693
+CTUEAP,-0.034163,-51.082337,1281,1394,660,30,Brazil (Amapá),Amapá/Estuary,2,No,Trade Find,-0.034163,-51.082337
+Barcarena 1,-1.5172,-48.567157,994,1215,960,60,Brazil (Pará),Amapá/Estuary,1,No,Unknown,-1.5172,-48.567157
+PA-MT-59 Coroata,-2.06926,-54.173422,1303,1420,590,30,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,1,No,Hybrid,-2.06926,-54.173422
+Ibama,-1.806998,-51.439117,1055,1419,850,40,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,2,No,Settlement,-1.806998,-51.439117
+PA-AL-17 Criajo,-2.723221,-51.940133,1050,1452,910,60,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,5,No,Settlement,-2.723221,-51.940133
+PA-AL-39 Itapinima,-3.662967,-52.424232,1196,1662,640,80,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,8,No,Settlement,-3.662967,-52.424232
+PA-AL-13 Boa Vista II,-2.785293,-52.077808,1055,1437,770,80,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,3,No,Settlement,-2.785293,-52.077808
+Vila Rica 2,-3.288716,-51.857029,1159,1269,850,30,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,1,No,Settlement,-3.288716,-51.857029
+Palmeiras,-3.459886,-52.326868,1182,1455,810,30,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,2,No,Settlement,-3.459886,-52.326868
+Santo Antonio 10,-3.12936,-51.766895,1166,1266,843,27,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,1,No,Settlement,-3.12936,-51.766895
+PA-AL-15 Cacarapi II,-2.65895,-52.064829,1050,1461,800,70,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,2,No,Settlement,-2.65895,-52.064829
+PA-BI-04 Cachoeira Grande,-3.911179,-52.822356,1287,1430,600,60,Brazil (Pará),Lower Amazon/Xingu-Iriri Rivers,1,No,Unknown,-3.911179,-52.822356
