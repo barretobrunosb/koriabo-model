@@ -19,7 +19,7 @@ It contains the code of radiocarbon modelling in R, the raw data of radiocarbon 
 
 For the **lexical database** used in the paper, go to the GitHub repository [here](https://github.com/LanguageStructure/carib-paper).
 
-[click here](https://github.com/barretobrunosb/koriabo-paper) to access the webpage containing the code and the results of the radiocarbon modelling.
+[click here](https://barretobrunosb.github.io/koriabo-model) to access the webpage containing the code and the results of the radiocarbon modelling.
 
 
 ## Abstract
