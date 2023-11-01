@@ -1,4 +1,4 @@
-# [Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)](https://github.com/barretobrunosb/koriabo-model)
+# [Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)](https://barretobrunosb.github.io/koriabo-model)
 
 Latest release: [![DOI](https://zenodo.org/badge/695556882.svg)](https://zenodo.org/doi/10.5281/zenodo.10059989)
 
