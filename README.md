@@ -30,4 +30,6 @@ Between AD 1000 and 1500, the Koriabo Tradition expanded extensively, spanning t
 **Keywords:** Koriabo Pottery, Amazonia, Carib-speaking peoples, Exchange Networks, Demic Diffusion
 
 
+
+
 [Assessing the spread of Koriabo Tradition as an archaeological correlate of the Cariban language expansions (Supplementary Material)](https://github.com/barretobrunosb/koriabo-model) by [Bruno de Souza Barreto](https://github.com/barretobrunosb) is licensed under [Attribution-ShareAlike 4.0 International![](https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1)![](https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1)![](https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1)](http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1)
